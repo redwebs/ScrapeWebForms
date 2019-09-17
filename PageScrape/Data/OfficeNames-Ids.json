@@ -1,0 +1,162 @@
+ [
+    {
+      "OfficeTypeId": 10,
+      "OfficeName": "Governor"
+    },
+    {
+      "OfficeTypeId": 20,
+      "OfficeName": "Lieutenant Governor"
+    },
+    {
+      "OfficeTypeId": 30,
+      "OfficeName": "Attorney General"
+    },
+    {
+      "OfficeTypeId": 40,
+      "OfficeName": "Secretary Of State"
+    },
+    {
+      "OfficeTypeId": 50,
+      "OfficeName": "Commissioner of Insurance"
+    },
+    {
+      "OfficeTypeId": 60,
+      "OfficeName": "Commissioner of Agriculture"
+    },
+    {
+      "OfficeTypeId": 70,
+      "OfficeName": "State School Superintendent"
+    },
+    {
+      "OfficeTypeId": 80,
+      "OfficeName": "Commissioner of Labor"
+    },
+    {
+      "OfficeTypeId": 100,
+      "OfficeName": "Public Service Commissioner"
+    },
+    {
+      "OfficeTypeId": 120,
+      "OfficeName": "State Senate"
+    },
+    {
+      "OfficeTypeId": 130,
+      "OfficeName": "State Representative"
+    },
+    {
+      "OfficeTypeId": 150,
+      "OfficeName": "Supreme Court"
+    },
+    {
+      "OfficeTypeId": 160,
+      "OfficeName": "Court of Appeals"
+    },
+    {
+      "OfficeTypeId": 170,
+      "OfficeName": "Judge Superior Court"
+    },
+    {
+      "OfficeTypeId": 180,
+      "OfficeName": "District Attorney"
+    },
+    {
+      "OfficeTypeId": 199,
+      "OfficeName": "Other State Office"
+    },
+    {
+      "OfficeTypeId": 200,
+      "OfficeName": "Clerks of Superior Court"
+    },
+    {
+      "OfficeTypeId": 210,
+      "OfficeName": "Coroners"
+    },
+    {
+      "OfficeTypeId": 220,
+      "OfficeName": "County Commissioner"
+    },
+    {
+      "OfficeTypeId": 230,
+      "OfficeName": "Court Tax Collector"
+    },
+    {
+      "OfficeTypeId": 240,
+      "OfficeName": "Judge of Civil Court"
+    },
+    {
+      "OfficeTypeId": 250,
+      "OfficeName": "Judge of Probate Court"
+    },
+    {
+      "OfficeTypeId": 260,
+      "OfficeName": "Judges of Recorders"
+    },
+    {
+      "OfficeTypeId": 270,
+      "OfficeName": "Magistrates"
+    },
+    {
+      "OfficeTypeId": 280,
+      "OfficeName": "School Board Member"
+    },
+    {
+      "OfficeTypeId": 290,
+      "OfficeName": "Sheriff"
+    },
+    {
+      "OfficeTypeId": 300,
+      "OfficeName": "Solicitor"
+    },
+    {
+      "OfficeTypeId": 310,
+      "OfficeName": "State Court Judge"
+    },
+    {
+      "OfficeTypeId": 320,
+      "OfficeName": "Surveyor"
+    },
+    {
+      "OfficeTypeId": 330,
+      "OfficeName": "Tax Assessor"
+    },
+    {
+      "OfficeTypeId": 340,
+      "OfficeName": "Tax Commissioner"
+    },
+    {
+      "OfficeTypeId": 350,
+      "OfficeName": "Tax Receiver"
+    },
+    {
+      "OfficeTypeId": 499,
+      "OfficeName": "Other County Office"
+    },
+    {
+      "OfficeTypeId": 500,
+      "OfficeName": "Aldermen"
+    },
+    {
+      "OfficeTypeId": 510,
+      "OfficeName": "Clerk of Municipal Court"
+    },
+    {
+      "OfficeTypeId": 520,
+      "OfficeName": "Councilman"
+    },
+    {
+      "OfficeTypeId": 530,
+      "OfficeName": "Judge of Municipal Court"
+    },
+    {
+      "OfficeTypeId": 540,
+      "OfficeName": "Marshall of Municipal Court"
+    },
+    {
+      "OfficeTypeId": 550,
+      "OfficeName": "Mayor"
+    },
+    {
+      "OfficeTypeId": 599,
+      "OfficeName": "Other Municipal Office"
+    }
+  ]

@@ -79,11 +79,16 @@ namespace ScrapeConsole
             progressBar1.Maximum = status.OfficeCount;
             progressBar1.Increment(status.OfficesSearched);
             tbStatus.Text = $"Candidate: {status.Candidate}"; 
-            txtLog.Text =    $"Elapsed Time {status.ElapsedTime}";
+            txtLog.Text +=  $"Candidate: {status.Candidate}, Elapsed Time {status.ElapsedTime}";
 
             if (!string.IsNullOrEmpty(status.Message))
             {
                 txtLog.Text += status.Message;
+            }
+
+            if (status.Cancelled)
+            {
+                txtLog.Text += "User cancelled the scrape.";
             }
         }
 
@@ -198,6 +203,8 @@ namespace ScrapeConsole
             if (backgroundWorkerScrape.IsBusy) return;
 
             btnStart.Enabled = false;                           // Disable the Start button
+            txtLog.Text = "Starting new scrape.";
+
             backgroundWorkerScrape.RunWorkerAsync(arrObjects);  // Call the background worker, process on a separate thread
         }
 
@@ -206,18 +213,7 @@ namespace ScrapeConsole
             // Flag the process to be stopped. This will not stop the process. 
             // It will only set the backgroundWorker.CancellationPending property.
             backgroundWorkerScrape.CancelAsync();
-        }
-
-        private void btnScrape_Click(object sender, EventArgs e)
-        {
-            // Test read Additional Info
-            var arrObjects = new object[] { 1970 };        // Declare the array of objects
-
-            if (backgroundWorkerScrape.IsBusy) return;
-
-            btnStart.Enabled = false;                           // Disable the Start button
-            backgroundWorkerScrape.RunWorkerAsync(arrObjects);  // Call the background worker, process on a separate thread
-
+            btnStart.Enabled = true;
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -234,12 +230,12 @@ namespace ScrapeConsole
         {
             if (_candidateList == null)
             {
-                txtLog.Text = "Empty candidate list";
+                txtLog.Text += "Empty candidate list";
                 return;
             }
             if (_candidateList.Count == 0)
             {
-                txtLog.Text = "No candidates in list";
+                txtLog.Text += "No candidates in list";
                 return;
             }
 
@@ -254,10 +250,21 @@ namespace ScrapeConsole
                 sb.AppendLine(candidate.ToCsv());
             }
 
-            var path = $"C:\\Temp\\{Utils.FilenameWithDateTime("Candidates", "csv")}";
+            var path = $"C:{tbCsvFilePath.Text}\\{Utils.FilenameWithDateTime("Candidates", "csv")}";
             FileHelper.StringToFile(sb, path);
 
-            txtLog.Text = $"CSV file written to {path}";
+            txtLog.Text += $"CSV file written to {path}";
+        }
+
+        private void BtnSetPath_Click(object sender, EventArgs e)
+        {
+            var browser = new FolderBrowserDialog();
+            string error;
+            tbCsvFilePath.Text = FileHelper.GetFolderName(browser, "", "Select CSV save folder", out error);
+            if (string.IsNullOrEmpty(tbCsvFilePath.Text))
+            {
+                tbCsvFilePath.Text = "C:\\Temp";
+            }
         }
     }
 

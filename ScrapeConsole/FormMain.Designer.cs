@@ -45,6 +45,7 @@
             this.tbSiteTitle = new System.Windows.Forms.TextBox();
             this.lblStatus = new System.Windows.Forms.Label();
             this.lblProgress = new System.Windows.Forms.Label();
+            this.btnSetPath = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtLog
@@ -93,7 +94,7 @@
             this.tbCsvFilePath.Location = new System.Drawing.Point(99, 62);
             this.tbCsvFilePath.MaxLength = 150;
             this.tbCsvFilePath.Name = "tbCsvFilePath";
-            this.tbCsvFilePath.Size = new System.Drawing.Size(527, 20);
+            this.tbCsvFilePath.Size = new System.Drawing.Size(478, 20);
             this.tbCsvFilePath.TabIndex = 136;
             this.tbCsvFilePath.Text = "C:\\Temp";
             // 
@@ -111,16 +112,16 @@
             this.tbStatus.Location = new System.Drawing.Point(97, 92);
             this.tbStatus.MaxLength = 100;
             this.tbStatus.Name = "tbStatus";
-            this.tbStatus.Size = new System.Drawing.Size(484, 20);
+            this.tbStatus.Size = new System.Drawing.Size(480, 20);
             this.tbStatus.TabIndex = 137;
             this.tbStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // btnStart
             // 
             this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStart.Location = new System.Drawing.Point(589, 101);
+            this.btnStart.Location = new System.Drawing.Point(584, 101);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(58, 27);
+            this.btnStart.Size = new System.Drawing.Size(61, 27);
             this.btnStart.TabIndex = 138;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
@@ -129,9 +130,9 @@
             // btnStop
             // 
             this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStop.Location = new System.Drawing.Point(653, 101);
+            this.btnStop.Location = new System.Drawing.Point(649, 101);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(60, 27);
+            this.btnStop.Size = new System.Drawing.Size(68, 27);
             this.btnStop.TabIndex = 139;
             this.btnStop.Text = "Stop";
             this.btnStop.UseVisualStyleBackColor = true;
@@ -140,9 +141,9 @@
             // btnSaveCsv
             // 
             this.btnSaveCsv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveCsv.Location = new System.Drawing.Point(633, 61);
+            this.btnSaveCsv.Location = new System.Drawing.Point(648, 61);
             this.btnSaveCsv.Name = "btnSaveCsv";
-            this.btnSaveCsv.Size = new System.Drawing.Size(81, 27);
+            this.btnSaveCsv.Size = new System.Drawing.Size(68, 27);
             this.btnSaveCsv.TabIndex = 140;
             this.btnSaveCsv.Text = "Save CSV";
             this.btnSaveCsv.UseVisualStyleBackColor = true;
@@ -152,7 +153,7 @@
             // 
             this.progressBar1.Location = new System.Drawing.Point(97, 112);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(484, 23);
+            this.progressBar1.Size = new System.Drawing.Size(480, 23);
             this.progressBar1.TabIndex = 141;
             // 
             // lblSiteUrl
@@ -204,15 +205,27 @@
             this.lblProgress.AutoSize = true;
             this.lblProgress.Location = new System.Drawing.Point(12, 116);
             this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(74, 13);
+            this.lblProgress.Size = new System.Drawing.Size(85, 13);
             this.lblProgress.TabIndex = 147;
-            this.lblProgress.Text = "Scrape Status";
+            this.lblProgress.Text = "Scrape Progress";
+            // 
+            // btnSetPath
+            // 
+            this.btnSetPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSetPath.Location = new System.Drawing.Point(583, 61);
+            this.btnSetPath.Name = "btnSetPath";
+            this.btnSetPath.Size = new System.Drawing.Size(61, 27);
+            this.btnSetPath.TabIndex = 148;
+            this.btnSetPath.Text = "Set Path";
+            this.btnSetPath.UseVisualStyleBackColor = true;
+            this.btnSetPath.Click += new System.EventHandler(this.BtnSetPath_Click);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(725, 343);
+            this.Controls.Add(this.btnSetPath);
             this.Controls.Add(this.lblProgress);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.label2);
@@ -256,6 +269,7 @@
         private System.Windows.Forms.TextBox tbSiteTitle;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label lblProgress;
+        private System.Windows.Forms.Button btnSetPath;
     }
 }
 

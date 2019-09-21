@@ -103,6 +103,13 @@ namespace PageScrape
                     userStatus.ElapsedTime = timer.Elapsed.ToString();
                     bgWorker.ReportProgress(queryCounter++/queries * 100, userStatus);  // can add userState object to return
 
+                    if (bgWorker.CancellationPending)
+                    {
+                        userStatus.Cancelled = true;
+                        bgWorker.ReportProgress(queryCounter++ / queries * 100, userStatus);
+                        break;
+                    }
+
                 }
                 catch (Exception e)
                 {
@@ -196,5 +203,7 @@ namespace PageScrape
         public string Candidate { get; set; }
 
         public string ElapsedTime { get; set; }
+
+        public bool Cancelled { get; set; } = false;
     }
 }

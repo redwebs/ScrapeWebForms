@@ -88,6 +88,7 @@
             this.tbSiteUrl.Name = "tbSiteUrl";
             this.tbSiteUrl.Size = new System.Drawing.Size(617, 20);
             this.tbSiteUrl.TabIndex = 134;
+            this.tbSiteUrl.Text = "http://media.ethics.ga.gov/search/Campaign/Campaign_ByOffice.aspx";
             // 
             // tbCsvFilePath
             // 
@@ -190,6 +191,7 @@
             this.tbSiteTitle.Name = "tbSiteTitle";
             this.tbSiteTitle.Size = new System.Drawing.Size(617, 20);
             this.tbSiteTitle.TabIndex = 144;
+            this.tbSiteTitle.Text = "GA Gov Transparency and Campaign Finance Commission Web Scrape";
             // 
             // lblStatus
             // 

@@ -17,6 +17,7 @@ namespace ScrapeConsole
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private static string LastStat = string.Empty;
         private const string ClientSecretPath = "C:\\Users\\fred\\Dropbox\\GoogleClientSecret1.json";
         private const string ClientSecretPathSheets = "C:\\Users\\fred\\Dropbox\\GoogSh4088cred.json";
 
@@ -78,8 +79,15 @@ namespace ScrapeConsole
             var status = (ScrapeUserStatus) e.UserState;
             progressBar1.Maximum = status.OfficeCount;
             progressBar1.Increment(status.OfficesSearched);
-            tbStatus.Text = $"Candidate: {status.Candidate}"; 
-            AppendLogBox($"{status.ElapsedTime} Candidate: {status.Candidate}");
+            tbStatus.Text = $"Candidate: {status.Candidate}";
+
+            var thisStat = $"{status.ElapsedTime} Candidate: {status.Candidate}";
+
+            if (thisStat != LastStat)
+            {
+                AppendLogBox(thisStat);
+                LastStat = thisStat;
+            }
 
             if (!string.IsNullOrEmpty(status.Message))
             {

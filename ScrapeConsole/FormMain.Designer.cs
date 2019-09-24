@@ -46,6 +46,8 @@
             this.lblStatus = new System.Windows.Forms.Label();
             this.lblProgress = new System.Windows.Forms.Label();
             this.btnSetPath = new System.Windows.Forms.Button();
+            this.cboYear = new System.Windows.Forms.ComboBox();
+            this.lblYearToScrape = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtLog
@@ -86,7 +88,7 @@
             this.tbSiteUrl.Location = new System.Drawing.Point(99, 35);
             this.tbSiteUrl.MaxLength = 150;
             this.tbSiteUrl.Name = "tbSiteUrl";
-            this.tbSiteUrl.Size = new System.Drawing.Size(617, 20);
+            this.tbSiteUrl.Size = new System.Drawing.Size(478, 20);
             this.tbSiteUrl.TabIndex = 134;
             this.tbSiteUrl.Text = "http://media.ethics.ga.gov/search/Campaign/Campaign_ByOffice.aspx";
             // 
@@ -189,7 +191,7 @@
             this.tbSiteTitle.Location = new System.Drawing.Point(99, 8);
             this.tbSiteTitle.MaxLength = 150;
             this.tbSiteTitle.Name = "tbSiteTitle";
-            this.tbSiteTitle.Size = new System.Drawing.Size(617, 20);
+            this.tbSiteTitle.Size = new System.Drawing.Size(478, 20);
             this.tbSiteTitle.TabIndex = 144;
             this.tbSiteTitle.Text = "GA Gov Transparency and Campaign Finance Commission Web Scrape";
             // 
@@ -222,11 +224,30 @@
             this.btnSetPath.UseVisualStyleBackColor = true;
             this.btnSetPath.Click += new System.EventHandler(this.BtnSetPath_Click);
             // 
+            // cboYear
+            // 
+            this.cboYear.FormattingEnabled = true;
+            this.cboYear.Location = new System.Drawing.Point(611, 30);
+            this.cboYear.Name = "cboYear";
+            this.cboYear.Size = new System.Drawing.Size(68, 21);
+            this.cboYear.TabIndex = 149;
+            // 
+            // lblYearToScrape
+            // 
+            this.lblYearToScrape.AutoSize = true;
+            this.lblYearToScrape.Location = new System.Drawing.Point(606, 9);
+            this.lblYearToScrape.Name = "lblYearToScrape";
+            this.lblYearToScrape.Size = new System.Drawing.Size(78, 13);
+            this.lblYearToScrape.TabIndex = 150;
+            this.lblYearToScrape.Text = "Year to Scrape";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(725, 343);
+            this.Controls.Add(this.lblYearToScrape);
+            this.Controls.Add(this.cboYear);
             this.Controls.Add(this.btnSetPath);
             this.Controls.Add(this.lblProgress);
             this.Controls.Add(this.lblStatus);
@@ -272,6 +293,8 @@
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.Button btnSetPath;
+        private System.Windows.Forms.ComboBox cboYear;
+        private System.Windows.Forms.Label lblYearToScrape;
     }
 }
 

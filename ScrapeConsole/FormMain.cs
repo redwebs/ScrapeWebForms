@@ -18,9 +18,6 @@ namespace ScrapeConsole
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private static string LastStat = string.Empty;
-        private const string ClientSecretPath = "C:\\Users\\fred\\Dropbox\\GoogleClientSecret1.json";
-        private const string ClientSecretPathSheets = "C:\\Users\\fred\\Dropbox\\GoogSh4088cred.json";
-
         private List<Candidate> _candidateList;
 
         #region Form Init
@@ -42,6 +39,17 @@ namespace ScrapeConsole
 
             // Tell backgroundWorker to report progress
             backgroundWorkerScrape.WorkerReportsProgress = true;
+
+            // Fill combo with years
+            var thisYear = DateTime.Now.Year;
+
+            for (var year = thisYear - 1; year < thisYear + 3; year++)
+            {
+                cboYear.Items.Add(year);
+            }
+
+            cboYear.SelectedItem = thisYear;
+
         }
 
         #endregion Form Init
@@ -206,7 +214,7 @@ namespace ScrapeConsole
         {
             var list = new List<Candidate>();
 
-            var arrObjects = new object[] {2019, list };        // Declare the array of objects
+            var arrObjects = new object[] {(int)cboYear.SelectedItem, list };        // Declare the array of objects
 
             if (backgroundWorkerScrape.IsBusy)
             {

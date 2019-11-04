@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace ScrapeConsole
 {
@@ -128,6 +129,24 @@ namespace ScrapeConsole
             var location = new Uri(assembly.GetName().CodeBase);
             var info = new FileInfo(location.AbsolutePath).Directory;
             return info != null ? info.FullName : "Unknown Directory";
+        }
+
+        private static string ExceptionInfo(Exception ex)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"Exception: {ex.Message}");
+
+            var exIterate = ex.InnerException;
+            var level = 1;
+
+            while (exIterate != null)
+            {
+                sb.AppendLine($"Inner{level++}: {exIterate.Message}");
+                exIterate = exIterate.InnerException;
+            }
+
+            return sb.ToString();
         }
     }
 }

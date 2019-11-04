@@ -26,7 +26,7 @@ namespace PageScrape
 
         public List<Candidate> Candidates { get; set; } = new List<Candidate>();
 
-        public static readonly SequenceStatus CurrentStatus = new SequenceStatus
+        private static readonly SequenceStatus CurrentStatus = new SequenceStatus
         {
             TotalSequences = -1,
             LastSequenceIdCompleted = 0,
@@ -111,9 +111,9 @@ namespace PageScrape
                     }
 
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Log.Error($"RunQuery threw and exception: {e.Message}");
+                    Log.Error($"RunAllQueries threw an exception: {ex.Message}");
                     throw;
                 }
             }

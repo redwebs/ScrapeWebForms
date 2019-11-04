@@ -17,6 +17,7 @@ namespace ScrapeConsole
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private const string DnsNotResolved = "The remote name could not be resolved";
         private static string LastStat = string.Empty;
         private List<Candidate> _candidateList;
 
@@ -69,7 +70,21 @@ namespace ScrapeConsole
             //  RunSingleQuery();
             //  TestAdditionalInfo();
 
-            RunAllQueries(year, sendingWorker);
+            try
+            {
+                RunAllQueries(year, sendingWorker);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains(DnsNotResolved))
+                {
+
+
+                }
+
+                Console.WriteLine(ex);
+                throw;
+            }
 
             var output = new ScrapeResult
             {
@@ -202,7 +217,7 @@ namespace ScrapeConsole
 
             var program = new ScrapeSequence(path);
 
-            var cnt = program.RunAllQueries(year, bgWorker);
+            program.RunAllQueries(year, bgWorker);
         }
 
         #endregion Scrape Testing and development
@@ -292,12 +307,5 @@ namespace ScrapeConsole
             txtLog.Text = $"{str}{Environment.NewLine}{txtLog.Text}";
         }
 
-
-    }
-
-    public class ScrapeResult
-    {
-        public List<Candidate> Candidates { get; set; }
-        public string ElapsedTime { get; set; }
     }
 }

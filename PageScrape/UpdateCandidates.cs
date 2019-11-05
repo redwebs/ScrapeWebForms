@@ -72,7 +72,14 @@ namespace PageScrape
             CurrentStatus.TheUri = CreateUriWithQueryString(formSearch);
             CurrentStatus.Url = CurrentStatus.TheUri.OriginalString;
 
-            _httpRespMsg = GetSearchPage(CurrentStatus.TheUri, HttpMethod.Get).Result;
+            try
+            {
+                _httpRespMsg = GetSearchPage(CurrentStatus.TheUri, HttpMethod.Get).Result;
+            }
+            catch (Exception ex)
+            {
+
+            }
 
             if (!_httpRespMsg.IsSuccessStatusCode)
             {

@@ -70,6 +70,11 @@ namespace ScrapeConsole
             //  RunSingleQuery();
             //  TestAdditionalInfo();
 
+            var output = new ScrapeResult
+            {
+                Candidates = UpdateCandidates.Candidates,
+            };
+
             try
             {
                 RunAllQueries(year, sendingWorker);
@@ -78,22 +83,13 @@ namespace ScrapeConsole
             {
                 if (ex.Message.Contains(DnsNotResolved))
                 {
-
-
+                    output.ErrorEncountered = true;
+                    output.ErrorMessage = "DNS lookup failed for site, check Internet connection.";
                 }
-
-                Console.WriteLine(ex);
-                throw;
             }
 
-            var output = new ScrapeResult
-            {
-                Candidates = UpdateCandidates.Candidates,
-                ElapsedTime = timer.Elapsed.ToString()
-            };
-
+            output.ElapsedTime = timer.Elapsed.ToString();
             e.Result = output;
-            
         }
 
         private void BackgroundWorkerScrape_ProgressChanged(object sender, ProgressChangedEventArgs e)

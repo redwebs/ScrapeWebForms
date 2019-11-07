@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace ScrapeConsole
+namespace PageScrape
 {
     public static class Utils
     {
@@ -131,19 +131,30 @@ namespace ScrapeConsole
             return info != null ? info.FullName : "Unknown Directory";
         }
 
-        private static string ExceptionInfo(Exception ex)
+        public static string ExceptionInfo(Exception ex)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             sb.AppendLine($"Exception: {ex.Message}");
 
-            var exIterate = ex.InnerException;
+            var exInnerIterate = ex.InnerException;
             var level = 1;
 
-            while (exIterate != null)
+            while (exInnerIterate != null)
             {
-                sb.AppendLine($"Inner{level++}: {exIterate.Message}");
-                exIterate = exIterate.InnerException;
+                sb.AppendLine($"Inner{level++}: {exInnerIterate.Message}");
+
+                if (exInnerIterate.GetType() == typeof(AggregateException))
+                {
+                    var listOfInnerExceptions = ((AggregateException) exInnerIterate).InnerExceptions;
+
+                    foreach (var innerExItem in listOfInnerExceptions)
+                    {
+                        sb.AppendLine($"Inner Ex Item: {innerExItem.Message}");
+                    }
+                }
+
+                exInnerIterate = exInnerIterate.InnerException;
             }
 
             return sb.ToString();

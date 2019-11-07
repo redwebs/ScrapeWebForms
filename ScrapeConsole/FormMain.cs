@@ -70,26 +70,15 @@ namespace ScrapeConsole
             //  RunSingleQuery();
             //  TestAdditionalInfo();
 
-            var output = new ScrapeResult
+            var scrapeResult = new ScrapeResult
             {
                 Candidates = UpdateCandidates.Candidates,
             };
 
-            try
-            {
-                RunAllQueries(year, sendingWorker);
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains(DnsNotResolved))
-                {
-                    output.ErrorEncountered = true;
-                    output.ErrorMessage = "DNS lookup failed for site, check Internet connection.";
-                }
-            }
-
-            output.ElapsedTime = timer.Elapsed.ToString();
-            e.Result = output;
+            var seqStatus = RunAllQueries(year, sendingWorker);
+            scrapeResult.SequenceStat = seqStatus;
+            scrapeResult.ElapsedTime = timer.Elapsed.ToString();
+            e.Result = scrapeResult;
         }
 
         private void BackgroundWorkerScrape_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -133,12 +122,31 @@ namespace ScrapeConsole
             }
             else
             {
-                // The process finished
-                var result = (ScrapeResult) e.Result;
-                _candidateList = (List<Candidate>)result.Candidates;
-                tbStatus.Text = $" Job finished, {_candidateList.Count} Candidates, Elapsed Time: {result.ElapsedTime}";
-            }
+                var result = (ScrapeResult)e.Result;
 
+                if (result.SequenceStat.SequenceFail)
+                {
+                    var lastMsg = result.SequenceStat.LastOpMessage;
+
+                    if (lastMsg.Contains(DnsNotResolved))
+                    {
+                        tbStatus.Text = $" Job aborted, DNS lookup failed for site, check Internet connection. Elapsed Time: {result.ElapsedTime}";
+                    }
+                    else
+                    {
+                        // Some other fatal error
+                        tbStatus.Text = $" Job aborted, {lastMsg} Candidates, Elapsed Time: {result.ElapsedTime}";
+                    }
+
+                }
+                else
+                {
+                    // The process finished
+                    _candidateList = (List<Candidate>) result.Candidates;
+                    tbStatus.Text = $" Job finished, {_candidateList.Count} Candidates, Elapsed Time: {result.ElapsedTime}";
+                }
+            }
+            AppendLogBox(tbStatus.Text);
             btnStart.Enabled = true;
         }
 
@@ -207,13 +215,15 @@ namespace ScrapeConsole
             }
         }
 
-        private static void RunAllQueries(int year, BackgroundWorker bgWorker)
+        private static SequenceStatus RunAllQueries(int year, BackgroundWorker bgWorker)
         {
             var path = $"{Utils.GetExecutingDirectory()}\\Data\\OfficeNames-Ids.json";
 
             var program = new ScrapeSequence(path);
 
             program.RunAllQueries(year, bgWorker);
+
+            return program.SeqStatus;
         }
 
         #endregion Scrape Testing and development

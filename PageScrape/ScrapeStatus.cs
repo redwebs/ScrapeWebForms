@@ -44,10 +44,10 @@ namespace PageScrape
                 }
             }
         }
+        
+        public StringBuilder SbLog { get; }
 
-        public StringBuilder SbLog { get; set; }
-
-        public bool InternalLoggingOn { get; set; } = true;
+        public bool InternalLoggingOn { private get; set; } = true;
 
         public bool LoggingOn { get; set; } = true;
 

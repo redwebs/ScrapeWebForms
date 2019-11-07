@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -78,6 +76,10 @@ namespace PageScrape
             }
             catch (Exception ex)
             {
+                CurrentStatus.LastOpMessage = $"ReadFirstPage exception calling GetSearchPage: {Utils.ExceptionInfo(ex)}";
+                CurrentStatus.ScrapeComplete = true;
+                CurrentStatus.TotalPages = -2;
+                return false;
 
             }
 

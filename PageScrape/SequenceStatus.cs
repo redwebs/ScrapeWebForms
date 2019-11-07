@@ -15,6 +15,8 @@ namespace PageScrape
 
         public bool SequenceComplete { get; set; } = false;
 
+        public bool SequenceFail { get; set; } = false;
+
         public int TotalSequences { get; set; }
 
         public int LastSequenceIdCompleted { get; set; }

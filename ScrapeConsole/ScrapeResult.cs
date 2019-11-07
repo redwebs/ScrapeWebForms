@@ -16,5 +16,7 @@ namespace ScrapeConsole
         public List<Candidate> Candidates { get; set; }
 
         public string ElapsedTime { get; set; } = string.Empty;
+
+        public SequenceStatus SequenceStat { get; set; }
     }
 }

@@ -39,6 +39,10 @@ namespace PageScrape
             InternalLoggingOn = true
         };
 
+        private static long _bytesReceived = 0;
+
+        public static long BytesReceived => _bytesReceived;
+
         #endregion Variables
 
         #region Constants
@@ -72,14 +76,7 @@ namespace PageScrape
             CurrentStatus.TheUri = CreateUriWithQueryString(formSearch);
             CurrentStatus.Url = CurrentStatus.TheUri.OriginalString;
 
-            try
-            {
-                _httpRespMsg = GetSearchPage(CurrentStatus.TheUri, HttpMethod.Get).Result;
-            }
-            catch (Exception ex)
-            {
-
-            }
+            _httpRespMsg = GetSearchPage(CurrentStatus.TheUri, HttpMethod.Get).Result;
 
             if (!_httpRespMsg.IsSuccessStatusCode)
             {
@@ -394,6 +391,13 @@ namespace PageScrape
         {
             var request = new HttpRequestMessage {RequestUri = uri, Method = method};
             return await NetHttpClient.Client.SendAsync(request);
+        }
+
+        public static async Task<HttpResponseMessage> GetSearchPageMetered(Uri uri, HttpMethod method)
+        {
+            var request = await GetSearchPage(uri, method);
+            // _bytesReceived += request
+            return request;
         }
 
         private static async Task<string> PostIt(Uri uri, int pageNum)

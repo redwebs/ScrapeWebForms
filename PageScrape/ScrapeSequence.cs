@@ -26,7 +26,7 @@ namespace PageScrape
 
         public List<Candidate> Candidates { get; set; } = new List<Candidate>();
 
-        private static readonly SequenceStatus CurrentStatus = new SequenceStatus
+        public SequenceStatus SeqStatus = new SequenceStatus
         {
             TotalSequences = -1,
             LastSequenceIdCompleted = 0,
@@ -50,7 +50,7 @@ namespace PageScrape
 
             if (officesCount <= 0)
             {
-                CurrentStatus.LastOpMessage = $"ReadOfficeJson returned Offices count of: {officesCount}";
+                SeqStatus.LastOpMessage = $"ReadOfficeJson returned Offices count of: {officesCount}";
                 return false;
             }
 
@@ -68,7 +68,7 @@ namespace PageScrape
                 {
                     OfficeTypeId = office.OfficeTypeId.ToString(),
                     OfficeName = office.OfficeName,
-                    FilerId = "C2019"
+                    FilerId = $"C{year}"
                 });
             }
             var userStatus = new ScrapeUserStatus
@@ -80,7 +80,7 @@ namespace PageScrape
 
             bgWorker.ReportProgress(0, userStatus);
 
-            CurrentStatus.LastOpMessage = $"RunAllQueries preparing to run {FormSearches.Count} searches.";
+            SeqStatus.LastOpMessage = $"RunAllQueries preparing to run {FormSearches.Count} searches.";
 
             var queryCounter = 1;
             var queries = FormSearches.Count;
@@ -91,7 +91,7 @@ namespace PageScrape
 
             foreach (var search in FormSearches)
             {
-                // CurrentStatus.LastOpMessage = $"RunAllQueries RunQuery num {queryCounter++} for search: {search.ToSingleLine()}.";
+                // SeqStatus.LastOpMessage = $"RunAllQueries RunQuery num {queryCounter++} for search: {search.ToSingleLine()}.";
 
                 try
                 {
@@ -99,7 +99,12 @@ namespace PageScrape
                     userStatus.Candidate = search.OfficeName;
                     bgWorker.ReportProgress(queryCounter++ / queries * 100, userStatus);  // can add userState object to return
 
-                    RunQuery(search);
+                    if (!RunQuery(search))
+                    {
+                        // Internet or some other fatal error
+                        SeqStatus.SequenceFail = true;
+                        return false;
+                    }
                     userStatus.ElapsedTime = timer.Elapsed.ToString();
                     bgWorker.ReportProgress(queryCounter++/queries * 100, userStatus);  // can add userState object to return
 
@@ -123,7 +128,7 @@ namespace PageScrape
 
         private bool RunQuery(FormSearch search)
         {
-            CurrentStatus.TheFormSearch = search;
+            SeqStatus.TheFormSearch = search;
 
             if (!UpdateCandidates.ReadFirstPage(search))
             {
@@ -131,26 +136,33 @@ namespace PageScrape
 
                 switch (UpdateCandidates.CurrentStatus.TotalPages)
                 {
+                    case -2:
+                        // Problem with internet connection
+                        SeqStatus.LastOpMessage = 
+                            $"RunQuery: Fail in first page search for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}: {UpdateCandidates.CurrentStatus.LastOpMessage}";
+                        SeqStatus.SequenceFail = true;
+                        return false;
+
                     case -1:
                         // Problem with search
-                        CurrentStatus.LastOpMessage = 
+                        SeqStatus.LastOpMessage = 
                             $"RunQuery: Fail in first page search for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}.";
                         break;
 
                     case 0:
                         // None found
-                        CurrentStatus.LastOpMessage = 
+                        SeqStatus.LastOpMessage = 
                             $"RunQuery: No candidates found for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}.";
                         break;
 
                     case 1:
                         // Only one page of results
-                        CurrentStatus.LastOpMessage = 
+                        SeqStatus.LastOpMessage = 
                             $"RunQuery: Found {UpdateCandidates.Candidates.Count} for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}.";
                         break;
 
                     default:
-                        CurrentStatus.LastOpMessage =
+                        SeqStatus.LastOpMessage =
                             $"RunQuery: ReadFirstPage said don't continue for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}, PageCount: {UpdateCandidates.CurrentStatus.TotalPages}";
                         break;
                 }
@@ -158,13 +170,13 @@ namespace PageScrape
 
             while (UpdateCandidates.CurrentStatus.LastPageCompleted < UpdateCandidates.CurrentStatus.TotalPages)
             {
-                // CurrentStatus.LastOpMessage = $"RunQuery: Reading subsequent page {pageCounter++} for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}."; 
+                // SeqStatus.LastOpMessage = $"RunQuery: Reading subsequent page {pageCounter++} for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}."; 
                 var finished = UpdateCandidates.ReadSubsequentPage(search);
             }
 
             var candidates = UpdateCandidates.Candidates;
 
-            //CurrentStatus.LastOpMessage = 
+            //SeqStatus.LastOpMessage = 
             //    $"RunQuery: Finished query for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}, Candidate Count: {UpdateCandidates.CurrentStatus.TotalCandidates}";
 
             return true;

@@ -37,9 +37,7 @@ namespace PageScrape
             InternalLoggingOn = true
         };
 
-        private static long _bytesReceived = 0;
-
-        public static long BytesReceived => _bytesReceived;
+        public static long BytesReceived { get; set; }
 
 
         #endregion Variables
@@ -71,7 +69,7 @@ namespace PageScrape
             const string tgtFooter = "//*[@id=\"ctl00_ContentPlaceHolder1_pSection\"]";
             const string tgtHiddenFields = "/html/body/form/input";
 
-            ResetStatus(true, true);
+            ResetStatus(true, true);        // sets TotalPages = -1
             CurrentStatus.TheUri = CreateUriWithQueryString(formSearch);
             CurrentStatus.Url = CurrentStatus.TheUri.OriginalString;
 
@@ -92,15 +90,18 @@ namespace PageScrape
             {
                 CurrentStatus.LastOpMessage = $"ReadFirstPage could not retrieve URL, StatusCode: {_httpRespMsg.StatusCode}";
                 CurrentStatus.ScrapeComplete = true;
+                CurrentStatus.TotalPages = -1;
                 return false;
 
             }
             var contentString = _httpRespMsg.Content.ReadAsStringAsync().Result;
+            BytesReceived += contentString.Length;
 
             if (string.IsNullOrEmpty(contentString))
             {
                 CurrentStatus.LastOpMessage = "ReadFirstPage received null content";
                 CurrentStatus.ScrapeComplete = true;
+                CurrentStatus.TotalPages = -1;
                 return false;
             }
 
@@ -403,11 +404,11 @@ namespace PageScrape
             return await NetHttpClient.Client.SendAsync(request);
         }
 
-        public static async Task<HttpResponseMessage> GetSearchPageMetered(Uri uri, HttpMethod method)
+        public static async Task<string> GetSearchPageString(Uri uri, HttpMethod method)
         {
             var request = await GetSearchPage(uri, method);
             // _bytesReceived += request
-            return request;
+            return ""; //request;
         }
 
         private static async Task<string> PostIt(Uri uri, int pageNum)
@@ -431,6 +432,8 @@ namespace PageScrape
             }
 
             var stringContent = await _httpRespMsg.Content.ReadAsStringAsync();
+            BytesReceived += stringContent.Length;
+
             return stringContent;
         }
 

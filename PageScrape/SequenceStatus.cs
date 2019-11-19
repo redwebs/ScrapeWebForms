@@ -21,6 +21,8 @@ namespace PageScrape
 
         public int LastSequenceIdCompleted { get; set; }
 
+        public long BytesReceived { get; set; } = 0;
+
         private string _message = string.Empty;
 
         public string LastOpMessage

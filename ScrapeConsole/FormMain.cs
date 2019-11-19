@@ -110,6 +110,8 @@ namespace ScrapeConsole
 
         private void BackgroundWorkerScrape_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            var result = (ScrapeResult)e.Result;
+
             if (e.Error != null)
             {
                 // An error occurred
@@ -122,8 +124,6 @@ namespace ScrapeConsole
             }
             else
             {
-                var result = (ScrapeResult)e.Result;
-
                 if (result.SequenceStat.SequenceFail)
                 {
                     var lastMsg = result.SequenceStat.LastOpMessage;
@@ -146,6 +146,7 @@ namespace ScrapeConsole
                     tbStatus.Text = $" Job finished, {_candidateList.Count} Candidates, Elapsed Time: {result.ElapsedTime}";
                 }
             }
+            AppendLogBox($"Total Bytes Read: {result.SequenceStat.BytesReceived:###,###}");
             AppendLogBox(tbStatus.Text);
             btnStart.Enabled = true;
         }

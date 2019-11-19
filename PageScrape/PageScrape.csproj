@@ -68,6 +68,7 @@
     <Compile Include="PostResponseItem.cs" />
     <Compile Include="ScrapeSequence.cs" />
     <Compile Include="ScrapeStatus.cs" />
+    <Compile Include="ScrapeUserStatus.cs" />
     <Compile Include="ScrapHelp.cs" />
     <Compile Include="SequenceStatus.cs" />
     <Compile Include="UpdateCandidates.cs" />

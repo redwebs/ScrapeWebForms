@@ -47,6 +47,8 @@ namespace PageScrape
 
             }
             var contentString = httpRespMsg.Content.ReadAsStringAsync().Result;
+            UpdateCandidates.BytesReceived += contentString.Length;
+
 
             if (string.IsNullOrEmpty(contentString))
             {

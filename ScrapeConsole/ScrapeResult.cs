@@ -18,5 +18,6 @@ namespace ScrapeConsole
         public string ElapsedTime { get; set; } = string.Empty;
 
         public SequenceStatus SequenceStat { get; set; }
+
     }
 }

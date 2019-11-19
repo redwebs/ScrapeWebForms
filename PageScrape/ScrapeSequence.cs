@@ -123,6 +123,9 @@ namespace PageScrape
                 }
             }
 
+            SeqStatus.BytesReceived = UpdateCandidates.BytesReceived;
+            userStatus.BytesReceived = UpdateCandidates.BytesReceived;
+
             return true;
         }
 
@@ -144,13 +147,13 @@ namespace PageScrape
                         return false;
 
                     case -1:
-                        // Problem with search
+                        // Problem with search: Could not retrieve URL, null content
                         SeqStatus.LastOpMessage = 
-                            $"RunQuery: Fail in first page search for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}.";
+                            $"RunQuery: Fail in first page search for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}: {UpdateCandidates.CurrentStatus.LastOpMessage}";
                         break;
 
                     case 0:
-                        // None found
+                        // No candidates found in category
                         SeqStatus.LastOpMessage = 
                             $"RunQuery: No candidates found for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}.";
                         break;
@@ -163,7 +166,7 @@ namespace PageScrape
 
                     default:
                         SeqStatus.LastOpMessage =
-                            $"RunQuery: ReadFirstPage said don't continue for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}, PageCount: {UpdateCandidates.CurrentStatus.TotalPages}";
+                            $"RunQuery: ReadFirstPage said don't continue for {search.OfficeName}, officeTypeId: {search.OfficeTypeId}, PageCount: {UpdateCandidates.CurrentStatus.TotalPages}: Should never get here!";
                         break;
                 }
             }
@@ -204,18 +207,4 @@ namespace PageScrape
         }
     }
 
-    public class ScrapeUserStatus
-    {
-        public int OfficeCount { get; set; }
-
-        public int OfficesSearched { get; set; }
-
-        public string Message { get; set; }
-
-        public string Candidate { get; set; }
-
-        public string ElapsedTime { get; set; }
-
-        public bool Cancelled { get; set; } = false;
-    }
 }

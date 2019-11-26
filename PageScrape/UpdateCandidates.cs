@@ -251,41 +251,41 @@ namespace PageScrape
 
                 foreach (var td in trBody.Descendants())
                 {
+                    var tdText = td.InnerText.Trim();
 
                     //  Was idx 0,5,10 for HtmlWeb.Load
                     switch (tdCounter++)
                     {
                         case 3:
-                            candidate.CandidateName = td.InnerText.Trim();
+                            candidate.CandidateName = tdText;
                             break;
 
                         case 7:
 
                             var year = 0;
 
-                            if (!Int32.TryParse(td.InnerText.Trim(), out year))
+                            if (!Int32.TryParse(tdText, out year))
                             {
                                 candidate.Notes += "Empty Election Year.";
 
-                                if (td.InnerText.Trim() != string.Empty)
+                                if (tdText != string.Empty)
                                 {
-                                    CurrentStatus.LastOpMessage = $"Non-int year text: {td.InnerText.Trim()} for candidate {candidate.CandidateName}.";
+                                    CurrentStatus.LastOpMessage = $"Non-int year text: {tdText} for candidate {candidate.CandidateName}.";
                                 }
-
                             }
                             candidate.Year = year;
                             break;
 
+                        case 13:
                         case 16:
-                            var dateDoiFiled = DateTime.MinValue;
 
-                            if (!DateTime.TryParse(td.InnerText.Trim(), out dateDoiFiled))
+                            if (!DateTime.TryParse(tdText, out var dateDoiFiled))
                             {
                                 candidate.Notes += "Empty DOI date.";
 
-                                if (td.InnerText.Trim() != string.Empty)
+                                if (tdText != string.Empty)
                                 {
-                                    CurrentStatus.LastOpMessage = $"Non-Date DOI text: {td.InnerText.Trim()} for candidate {candidate.CandidateName}.";
+                                    CurrentStatus.LastOpMessage = $"Non-Date DOI text: {tdText} for candidate {candidate.CandidateName}.";
                                 }
                             }
                             candidate.DoiFiled = dateDoiFiled;

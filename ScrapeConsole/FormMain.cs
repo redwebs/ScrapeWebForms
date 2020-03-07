@@ -245,7 +245,7 @@ namespace ScrapeConsole
             }
 
             btnStart.Enabled = false;                           // Disable the Start button
-            txtLog.Text = "Starting new scrape.";
+            AppendLogBox("Starting new scrape.");
 
             backgroundWorkerScrape.RunWorkerAsync(arrObjects);  // Call the background worker, process on a separate thread
         }
@@ -292,7 +292,7 @@ namespace ScrapeConsole
                 sb.AppendLine(candidate.ToCsv());
             }
 
-            var path = $"{tbCsvFilePath.Text}\\{Utils.FilenameWithDateTime("Candidates", "csv")}";
+            var path = $"{tbCsvFilePath.Text}\\{Utils.FilenameWithDateTime("CandidatesEthics", "csv")}";
             FileHelper.StringToFile(sb, path);
 
             AppendLogBox($"CSV file written to {path}");

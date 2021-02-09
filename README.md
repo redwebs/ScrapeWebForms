@@ -5,3 +5,4 @@ The program is a Microsoft Windows Forms programs written in C#.  The developmen
 
 The Ethics scrape was the more difficult of the two since their site was built using Microsoft Web Forms and has a paged format.  After selecting search parameters a POST gets a listing with “Page 1 of X” at the bottom of the first page.  The first page data is formatted into CSV data and the next page is requested via a POST.  These Web Forms maintain state using the dreaded “view state” data that is returned to the server in each post so that has to be included in the scraper POST.  Once all pages are done the UI offers options to save the data to a CSV file.
 
+The Ethics site is at http://media.ethics.ga.gov/search/Campaign/Campaign_ByOffice.aspx .

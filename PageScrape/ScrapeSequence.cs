@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using Newtonsoft.Json;
 
 namespace PageScrape
@@ -189,15 +190,15 @@ namespace PageScrape
         {
             // OfficeTypeIds: 1-199 = State, 200-499 = County, 500-599 = Municipal
 
-            var json = string.Empty;
+            string json;
 
             try
             {
                 json = System.IO.File.ReadAllText(_officeNamesIdsFilePath);
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
-                Log.Error($"ReadOfficeJson: Cannot read json file at location {_officeNamesIdsFilePath}, ex: {ex}");
+                Log.Error($"ReadOfficeJson: Cannot read json file at location {_officeNamesIdsFilePath}, ex: {ex.Message}");
                 return -1;
             }
 

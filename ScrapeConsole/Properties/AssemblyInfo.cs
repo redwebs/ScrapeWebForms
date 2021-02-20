@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VoterImport")]
-[assembly: AssemblyDescription("Import voter data from Google Sheet to SQL Server")]
+[assembly: AssemblyTitle("ScrapeEthicsGA")]
+[assembly: AssemblyDescription("Import candidate data via screen scrape")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Fred Webs, LLC")]
-[assembly: AssemblyProduct("VoterGuide")]
-[assembly: AssemblyCopyright("Copyright © Fred Webs LLC, 2019")]
+[assembly: AssemblyCompany("Fred Webs")]
+[assembly: AssemblyProduct("ScrapeEthics")]
+[assembly: AssemblyCopyright("Copyright © Fred Webs LLC, 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

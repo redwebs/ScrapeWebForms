@@ -218,9 +218,12 @@ namespace ScrapeConsole
 
         private static SequenceStatus RunAllQueries(int year, BackgroundWorker bgWorker)
         {
-            var path = $"{Utils.GetExecutingDirectory()}\\Data\\OfficeNames-Ids.json";
+            //var path = $"{Utils.GetExecutingDirectory()}\\Data\\OfficeNames-Ids.json";
+            var appDataPath = $"{Application.UserAppDataPath}\\OfficeNames-Ids.json";
 
-            var program = new ScrapeSequence(path);
+            Log.Debug($"appDataPath = {appDataPath}");
+
+            var program = new ScrapeSequence(appDataPath);
 
             program.RunAllQueries(year, bgWorker);
 

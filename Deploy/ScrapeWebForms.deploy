@@ -1,12 +1,12 @@
 DeployMaster Installation Script
 630
-Fred Webs LLC
+FredWebs
 www.fredwebs.com
 ScrapeWebForms
 
 1.0.0
 TRUE
-44245
+44256
 C:\Users\fred\Downloads\window_fullscreen.ico
 Copyright © 2021 Fred Webs LLC
 
@@ -15,16 +15,16 @@ TRUE
 
 
 TRUE
-%PROGRAMFILES%\Fred Webs LLC\ScrapeWebForms
-%COMMONFILES%\Fred Webs LLC\ScrapeWebForms
+%PROGRAMFILES%\FredWebs\ScrapeWebForms
+%COMMONFILES%\FredWebs\ScrapeWebForms
 %PROGRAMSMENU%\ScrapeWebForms
-%COMMONAPPDATAROOT%\Fred Webs LLC\ScrapeWebForms
-TRUE
+%COMMONAPPDATAROOT%\FredWebs\ScrapeWebForms
 FALSE
-%LOCALAPPDATAROOT%\Fred Webs LLC\ScrapeWebForms
-%LOCALAPPDATAROOT%\Fred Webs LLC
+FALSE
+%LOCALAPPDATAROOT%\FredWebs\ScrapeWebForms
+%LOCALAPPDATAROOT%\FredWebs
 %PROGRAMSMENU%\ScrapeWebForms
-%APPDATAROOT%\Fred Webs LLC\ScrapeWebForms
+%APPDATAROOT%\FredWebs\ScrapeWebForms
 1
 1
 You are attempting to run the installer for %APP% %VERSION%.  This installer only works on %INSTALLER%-bit versions of Windows.  You are running a %USER%-bit version of Windows.  Please check the developer's website to see whether there is a separate %USER%-bit installer for %APP% that you can use on your version of Windows.
@@ -102,6 +102,29 @@ FALSE
 FALSE
 0
 +
+ScrapeData
+0
+TRUE
+TRUE
+Description of this component to help the user to determine if it should be installed or not.
++
+%COMMONDOCUMENTS%
+1
+TRUE
++
+ScrapeWebForms
+1
+TRUE
++
+C:\Work\ScrapeWebForms\PageScrape\Data\OfficeNames-Ids.json
+3
+0
+TRUE
+TRUE
+FALSE
+-
+-
+-
 ScrapeWebForms
 0
 TRUE
@@ -929,6 +952,9 @@ C:\Work\ScrapeWebForms\ScrapeConsole\bin\Release\ScrapeConsole.exe
 -
 -
 0
+2
+0
+2
 0
 0
 2

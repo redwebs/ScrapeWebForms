@@ -218,8 +218,9 @@ namespace ScrapeConsole
 
         private static SequenceStatus RunAllQueries(int year, BackgroundWorker bgWorker)
         {
-            //var path = $"{Utils.GetExecutingDirectory()}\\Data\\OfficeNames-Ids.json";
-            var appDataPath = $"{Application.UserAppDataPath}\\OfficeNames-Ids.json";
+            // Does not work on installed version: $"{Utils.GetExecutingDirectory()}\\Data\\OfficeNames-Ids.json";
+
+            var appDataPath = $"{AppDomain.CurrentDomain.BaseDirectory}\\Data\\OfficeNames-Ids.json";
 
             Log.Debug($"appDataPath = {appDataPath}");
 

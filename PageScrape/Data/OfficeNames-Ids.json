@@ -68,10 +68,6 @@
       "OfficeName": "Clerks of Superior Court"
     },
     {
-      "OfficeTypeId": 210,
-      "OfficeName": "Coroners"
-    },
-    {
       "OfficeTypeId": 220,
       "OfficeName": "County Commissioner"
     },
@@ -112,16 +108,8 @@
       "OfficeName": "State Court Judge"
     },
     {
-      "OfficeTypeId": 320,
-      "OfficeName": "Surveyor"
-    },
-    {
       "OfficeTypeId": 330,
       "OfficeName": "Tax Assessor"
-    },
-    {
-      "OfficeTypeId": 340,
-      "OfficeName": "Tax Commissioner"
     },
     {
       "OfficeTypeId": 350,

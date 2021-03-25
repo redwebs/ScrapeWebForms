@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -18,7 +19,9 @@ namespace PageScrape
         #region Variables
 
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        // private const string CampaignByOfficeUrl = "http://media.ethics.ga.gov/search/Campaign/Campaign_ByOffice.aspx";
+        
+        // Main page "http://media.ethics.ga.gov/search/Campaign/Campaign_ByOffice.aspx";
+
         private const string OfficeSearchResultsUrl = "http://media.ethics.ga.gov/search/Campaign/Campaign_OfficeSearchResults.aspx";
 
         private static readonly NameValueCollection HiddenArguments = new NameValueCollection();
@@ -26,6 +29,8 @@ namespace PageScrape
         public static List<Candidate> Candidates = new List<Candidate>();
 
         private static HttpResponseMessage _httpRespMsg;
+
+        private static string _aspnetSessionId = "Not set";
 
         public static readonly ScrapeStatus CurrentStatus = new ScrapeStatus
         {
@@ -38,7 +43,6 @@ namespace PageScrape
         };
 
         public static long BytesReceived { get; set; }
-
 
         #endregion Variables
 
@@ -69,6 +73,8 @@ namespace PageScrape
             const string tgtFooter = "//*[@id=\"ctl00_ContentPlaceHolder1_pSection\"]";
             const string tgtHiddenFields = "/html/body/form/input";
 
+            var officeNameAndId = $"Office {formSearch.OfficeName}-{formSearch.OfficeTypeId}";
+
             ResetStatus(true, true);        // sets TotalPages = -1
             CurrentStatus.TheUri = CreateUriWithQueryString(formSearch);
             CurrentStatus.Url = CurrentStatus.TheUri.OriginalString;
@@ -76,10 +82,13 @@ namespace PageScrape
             try
             {
                 _httpRespMsg = GetSearchPage(CurrentStatus.TheUri, HttpMethod.Get).Result;
+                Log.Debug(ListHeaderValues());
+                _aspnetSessionId = GetSessionId(_httpRespMsg);
+                Log.Debug($"ASPNET_SessionId = {_aspnetSessionId}");
             }
             catch (Exception ex)
             {
-                CurrentStatus.LastOpMessage = $"ReadFirstPage exception calling GetSearchPage: {Utils.ExceptionInfo(ex)}";
+                CurrentStatus.LastOpMessage = $"ReadFirstPage {officeNameAndId} exception calling GetSearchPage: {Utils.ExceptionInfo(ex)}";
                 CurrentStatus.ScrapeComplete = true;
                 CurrentStatus.TotalPages = -2;
                 return false;
@@ -88,7 +97,7 @@ namespace PageScrape
 
             if (!_httpRespMsg.IsSuccessStatusCode)
             {
-                CurrentStatus.LastOpMessage = $"ReadFirstPage could not retrieve URL, StatusCode: {_httpRespMsg.StatusCode}";
+                CurrentStatus.LastOpMessage = $"ReadFirstPage {officeNameAndId} could not retrieve URL, StatusCode: {_httpRespMsg.StatusCode}";
                 CurrentStatus.ScrapeComplete = true;
                 CurrentStatus.TotalPages = -1;
                 return false;
@@ -99,7 +108,7 @@ namespace PageScrape
 
             if (string.IsNullOrEmpty(contentString))
             {
-                CurrentStatus.LastOpMessage = "ReadFirstPage received null content";
+                CurrentStatus.LastOpMessage = "ReadFirstPage {officeNameAndId} received null content";
                 CurrentStatus.ScrapeComplete = true;
                 CurrentStatus.TotalPages = -1;
                 return false;
@@ -118,7 +127,7 @@ namespace PageScrape
             {
                 if (noResultsNodes[0].InnerHtml.Contains("Search Returned No Results."))
                 {
-                    CurrentStatus.LastOpMessage = $"Search Returned No Candidates for OfficeTypeId {formSearch.OfficeTypeId}";
+                    CurrentStatus.LastOpMessage = $"Search Returned No Candidates for {officeNameAndId}";
                     CurrentStatus.TotalPages = 0;
                     CurrentStatus.TotalCandidates = 0;
                     CurrentStatus.ScrapeComplete = true;
@@ -142,7 +151,7 @@ namespace PageScrape
             if (footerNodes == null)
             {
                 CurrentStatus.ScrapeComplete = true;
-                CurrentStatus.LastOpMessage = "FooterNodes search returned null.";
+                CurrentStatus.LastOpMessage = $"ReadFirstPage: FooterNodes search returned null for {officeNameAndId}";
                 return false;
             }
             var footerNodesIh = footerNodes[0].InnerHtml;
@@ -150,6 +159,7 @@ namespace PageScrape
             // CurrentStatus.LastOpMessage = "Page: " + pageAndCount.Item1 + ", PageCount: " + pageAndCount.Item2;
             CurrentStatus.TotalPages = pageAndCount.Item2;
             var hasPageSelectorRow = pageAndCount.Item2 > 1;   // If there is only a single page there is no Page selector row
+            CurrentStatus.LastOpMessage = $"ReadFirstPage: Page count for {officeNameAndId} = {pageAndCount.Item2}.";
 
             // Get candidate data from the table
 
@@ -158,10 +168,10 @@ namespace PageScrape
             if (nodes == null)
             {
                 CurrentStatus.ScrapeComplete = true;
-                CurrentStatus.LastOpMessage = "Data table search returned null.";
+                CurrentStatus.LastOpMessage = $"ReadFirstPage: Data table search returned null for {officeNameAndId}.";
                 return false;
             }
-
+            
             var htmlDocTh = new HtmlDocument();
             htmlDocTh.LoadHtml(nodes[0].InnerHtml);
 
@@ -174,15 +184,16 @@ namespace PageScrape
             if (thNames != checkStr)
             {
                 CurrentStatus.ScrapeComplete = true;
-                CurrentStatus.LastOpMessage = "Table header mismatch, should be: " + thNames + " but is: " + checkStr; 
+                CurrentStatus.LastOpMessage = $"ReadFirstPage: {officeNameAndId}, Table header mismatch, should be: {thNames} but is: {checkStr}"; 
                 return false;
             }
 
             // Go through the table nodes
 
+            CurrentStatus.LastOpMessage = $"ReadFirstPage: Calling ProcessTable for {officeNameAndId}, nodes.count = {nodes.Count}, hasPageSelectorRow = {hasPageSelectorRow}.";
             var rows = ProcessTable(formSearch, nodes, 1, hasPageSelectorRow);
 
-            // CurrentStatus.LastOpMessage = $"ReadFirstPage read page 1 with candidate count {rows}";
+            CurrentStatus.LastOpMessage = $"ReadFirstPage read page 1 for {officeNameAndId} with candidate count {rows}";
             CurrentStatus.LastPageCompleted = 1;
 
             if (CurrentStatus.TotalPages == 1)
@@ -292,6 +303,7 @@ namespace PageScrape
                             break;
 
                         default:
+                            Log.Info($"Process table encountered unknown tdCounter value: {tdCounter}");
                             break;
                     }
                 }
@@ -308,13 +320,14 @@ namespace PageScrape
 
         public static bool ReadSubsequentPage(FormSearch formSearch)
         {
-            int pageNumber = CurrentStatus.LastPageCompleted + 1;
+            var pageNumber = CurrentStatus.LastPageCompleted + 1;
+            var officeNameAndId = $"Office {formSearch.OfficeName}-{formSearch.OfficeTypeId}, Pg {pageNumber}";
 
             var contentString = PostIt(CurrentStatus.TheUri, pageNumber).Result;
 
             if (!_httpRespMsg.IsSuccessStatusCode)
             {
-                CurrentStatus.LastOpMessage = $"ReadSubsequentPage call returned Status Code: {_httpRespMsg.StatusCode}";
+                CurrentStatus.LastOpMessage = $"ReadSubsequentPage {officeNameAndId} call returned Status Code: {_httpRespMsg.StatusCode}";
                 CurrentStatus.ScrapeComplete = true;
                 CurrentStatus.LastPageCompleted++;
                 return false;
@@ -322,7 +335,7 @@ namespace PageScrape
 
             if (string.IsNullOrEmpty(contentString))
             {
-                CurrentStatus.LastOpMessage = "ReadSubsequentPage received null content";
+                CurrentStatus.LastOpMessage = $"ReadSubsequentPage {officeNameAndId} received null content";
                 CurrentStatus.ScrapeComplete = true;
                 CurrentStatus.LastPageCompleted++;
                 return false;
@@ -343,7 +356,7 @@ namespace PageScrape
             if (nodes == null)
             {
                 CurrentStatus.ScrapeComplete = true;
-                CurrentStatus.LastOpMessage = "Data table search returned null.";
+                CurrentStatus.LastOpMessage = $"ReadSubsequentPage {officeNameAndId} Data table search returned null nodes.";
                 CurrentStatus.LastPageCompleted++;
                 return false;
             }
@@ -414,13 +427,16 @@ namespace PageScrape
         private static async Task<string> PostIt(Uri uri, int pageNum)
         {
             var formDataList = FormDataList(pageNum);
-            var formContent = new FormUrlEncodedContent(formDataList);
+            Log.Debug(ListKeyValuePairs(formDataList, "FormData"));
 
-            // PrintKeyValuePairs(formDataList);
+            var formContent = new FormUrlEncodedContent(formDataList);
 
             var request = new HttpRequestMessage {RequestUri = uri, Method = HttpMethod.Post, Content = formContent};
 
             SetRequestHeaders(request);
+
+            Log.Debug(ListRequestHeaders(request));
+            Log.Debug(ListHeaderValues());
 
             _httpRespMsg = await NetHttpClient.Client.SendAsync(request);
 
@@ -460,12 +476,109 @@ namespace PageScrape
 
         private static void SetRequestHeaders(HttpRequestMessage request)
         {
-            request.Headers.Add("Accept-Language", "en-US,en;q=0.9");
-            request.Headers.Add("Cache-Control", "no-cache");
-            request.Headers.Add("Origin", "http://media.ethics.ga.gov");
-            request.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)");
-            request.Headers.Add("X-MicrosoftAjax", "Delta=true");
+            // To enable gzip decode see https://weblog.west-wind.com/posts/2007/Jun/29/HttpWebRequest-and-GZip-Http-Responses
+            // OR: https://stackoverflow.com/questions/20990601/decompressing-gzip-stream-from-httpclient-response
+            // request.Headers.Add("accept-encoding", "gzip, deflate, br");
+
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+            request.Headers.Add("accept", "*/*");
+            request.Headers.Add("accept-language", "en-US,en;q=0.9");
+            request.Headers.Add("cache-control", "no-cache");
+            request.Headers.Add("cookie", $"ASP.NET_SessionId={_aspnetSessionId};path=/;HttpOnly");
+            request.Headers.Add("origin", "https://media.ethics.ga.gov");
+            request.Headers.Add("referer", CurrentStatus.TheUri.AbsoluteUri);
+            request.Headers.Add("sec-fetch-dest", "empty");
+            request.Headers.Add("sec-fetch-mode", "cors");
+            request.Headers.Add("sec-fetch-site", "same-origin");
+            request.Headers.Add("sec-gpc", "1");
+            request.Headers.Add("user-agent", "ScrapeWebForms");
+            request.Headers.Add("x-microsoftajax", "Delta=true");
         }
+
+        private static string GetSessionId(HttpResponseMessage httpRespMsg)
+        {
+            // Set-Cookie:	 | ASP.NET_SessionId=l1ago0vqldihpf45rj1yak55; path=/; HttpOnly
+            foreach (var pair in httpRespMsg.Headers)
+            {
+                if (pair.Key.Equals("Set-Cookie"))
+                {
+                    var val = pair.Value.First();
+                    Log.Debug($"Set-Cookie = {val}");
+                    var semiFirstIdx = val.IndexOf(";", StringComparison.Ordinal);
+                    var equalsIdx = val.IndexOf("=", StringComparison.Ordinal);
+                    Log.Debug($"GetSessionId {val}, eq={equalsIdx}, semi={semiFirstIdx}");
+                    return val.Substring(equalsIdx + 1, semiFirstIdx - equalsIdx - 1);
+                }
+            }
+
+            return string.Empty;
+        }
+
+        #region ValueDisplay
+
+        private static string ListKeyValuePairs(List<KeyValuePair<string, string>> keyValuePairs, string dataName)
+        {
+            var sb = new StringBuilder($"Key-Value Pairs for {dataName}:\n");
+
+            foreach (var pair in keyValuePairs)
+            {
+                sb.Append(pair.Key);
+                sb.Append(":\t");
+                sb.Append(pair.Value);
+                sb.Append("\n");
+            }
+
+            return sb.ToString();
+        }
+
+        private static string ListHeaderValues()
+        {
+            var sb = new StringBuilder("Key-Value Pairs for HttpResponse Headers:\n");
+
+            foreach (var pair in _httpRespMsg.Headers)
+            {
+                sb.Append(pair.Key);
+                sb.Append(":\t");
+
+                foreach (var headerVal in pair.Value)
+                {
+                    sb.Append(" | ");
+                    sb.Append(headerVal);
+                }
+                sb.Append("\n");
+            }
+            return sb.ToString();
+        }
+
+        private static string ListRequestHeaders(HttpRequestMessage request)
+        {
+            var sb = new StringBuilder($"Key-Value Pairs for HTTPRequestMessage Header:\n");
+
+            foreach (var pair in request.Headers)
+            {
+                sb.Append(pair.Key);
+                sb.Append(":\t");
+
+                foreach (var val in pair.Value)
+                {
+                    sb.Append(val);
+                    sb.Append("\n");
+
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public static void PrintKeysAndValues(NameValueCollection myCol)
+        {
+            foreach (string s in myCol.AllKeys)
+            {
+                Log.Debug($"{s} {myCol[s]}");
+            }
+        }
+
+        #endregion
 
         private static void StoreHidden(HtmlNodeCollection headNodes)
         {
@@ -485,15 +598,13 @@ namespace PageScrape
                         case "value":
                             attributeValue = attribute.Value;
                             break;
-                        default:
-                            break;
                     }
                 }
-                if (attributeName != lastName)
-                {
-                    lastName = attributeName;
-                    HiddenArguments.Add(attributeName, attributeValue);
-                }
+
+                if (attributeName == lastName) continue;
+
+                lastName = attributeName;
+                HiddenArguments.Add(attributeName, attributeValue);
             }
         }
 
@@ -524,23 +635,6 @@ namespace PageScrape
 
             var url = System.Web.HttpUtility.UrlPathEncode(sb.ToString());
             return new Uri(url);
-        }
-
-        public static void PrintKeysAndValues(NameValueCollection myCol)
-        {
-            foreach (string s in myCol.AllKeys)
-            {
-                Log.Debug($"{s} {myCol[s]}");
-            }
-        }
-
-        public static void PrintKeyValuePairs(List<KeyValuePair<string, string>> pairs)
-        {
-            foreach (var pair in pairs)
-            {
-                Log.Debug($"KVP {pair.Key}, {pair.Value}");
-            }
-
         }
     }
 }

@@ -22,7 +22,7 @@ namespace PageScrape
         
         // Main page "http://media.ethics.ga.gov/search/Campaign/Campaign_ByOffice.aspx";
 
-        private const string OfficeSearchResultsUrl = "http://media.ethics.ga.gov/search/Campaign/Campaign_OfficeSearchResults.aspx";
+        private const string OfficeSearchResultsUrl = "https://media.ethics.ga.gov/search/Campaign/Campaign_OfficeSearchResults.aspx";
 
         private static readonly NameValueCollection HiddenArguments = new NameValueCollection();
 
@@ -50,21 +50,7 @@ namespace PageScrape
 
         #endregion
 
-        private static void ResetStatus(bool loggingOn, bool intLoggingOn)
-        {
-            HiddenArguments.Clear();
-
-            CurrentStatus.TotalPages = -1;
-            CurrentStatus.TotalCandidates = -1;
-            CurrentStatus.LastPageCompleted = 0;
-            CurrentStatus.ScrapeComplete = false;
-            CurrentStatus.LoggingOn = false;  // avoid output on last msg chg
-            CurrentStatus.LastOpMessage = string.Empty;
-            CurrentStatus.LoggingOn = true;
-            CurrentStatus.SbLog.Clear();
-            CurrentStatus.InternalLoggingOn = intLoggingOn;
-            CurrentStatus.LoggingOn = loggingOn;
-        }
+        #region First page and Subsequent
 
         public static bool ReadFirstPage(FormSearch formSearch)
         {
@@ -303,7 +289,7 @@ namespace PageScrape
                             break;
 
                         default:
-                            Log.Info($"Process table encountered unknown tdCounter value: {tdCounter}");
+                            // Log.Info($"Process table encountered unknown tdCounter value: {tdCounter}");
                             break;
                     }
                 }
@@ -362,10 +348,8 @@ namespace PageScrape
             }
             var rows = ProcessTable(formSearch, nodes, pageNumber);
 
-            //CurrentStatus.LastOpMessage = 
-            //    $"ReadSubsequentPage read page {pageNumber} with candidate count " + (rows - 2);
+            //CurrentStatus.LastOpMessage = $"ReadSubsequentPage read page {pageNumber} with candidate count " + (rows - 2);
             CurrentStatus.TotalCandidates += (rows - 2);
-
             CurrentStatus.LastPageCompleted++;
 
             if (CurrentStatus.TotalPages == pageNumber)
@@ -411,17 +395,14 @@ namespace PageScrape
                 */
         }
 
+        #endregion
+
+        #region Network Calls
+
         public static async Task<HttpResponseMessage> GetSearchPage(Uri uri, HttpMethod method)
         {
             var request = new HttpRequestMessage {RequestUri = uri, Method = method};
             return await NetHttpClient.Client.SendAsync(request);
-        }
-
-        public static async Task<string> GetSearchPageString(Uri uri, HttpMethod method)
-        {
-            var request = await GetSearchPage(uri, method);
-            // _bytesReceived += request
-            return ""; //request;
         }
 
         private static async Task<string> PostIt(Uri uri, int pageNum)
@@ -435,8 +416,8 @@ namespace PageScrape
 
             SetRequestHeaders(request);
 
-            Log.Debug(ListRequestHeaders(request));
-            Log.Debug(ListHeaderValues());
+            //Log.Debug(ListRequestHeaders(request));
+            //Log.Debug(ListHeaderValues());
 
             _httpRespMsg = await NetHttpClient.Client.SendAsync(request);
 
@@ -453,6 +434,9 @@ namespace PageScrape
             return stringContent;
         }
 
+        #endregion
+
+        #region Post Headers and Form
 
         private static List<KeyValuePair<string, string>> FormDataList(int pageNum)
         {
@@ -479,8 +463,9 @@ namespace PageScrape
             // To enable gzip decode see https://weblog.west-wind.com/posts/2007/Jun/29/HttpWebRequest-and-GZip-Http-Responses
             // OR: https://stackoverflow.com/questions/20990601/decompressing-gzip-stream-from-httpclient-response
             // request.Headers.Add("accept-encoding", "gzip, deflate, br");
-
+            
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+            request.Headers.Add("accept-encoding", "identity");
             request.Headers.Add("accept", "*/*");
             request.Headers.Add("accept-language", "en-US,en;q=0.9");
             request.Headers.Add("cache-control", "no-cache");
@@ -491,28 +476,107 @@ namespace PageScrape
             request.Headers.Add("sec-fetch-mode", "cors");
             request.Headers.Add("sec-fetch-site", "same-origin");
             request.Headers.Add("sec-gpc", "1");
-            request.Headers.Add("user-agent", "ScrapeWebForms");
             request.Headers.Add("x-microsoftajax", "Delta=true");
+            request.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)");
         }
+
+        #endregion
+
+        #region Utils
 
         private static string GetSessionId(HttpResponseMessage httpRespMsg)
         {
+            // Get Cookie from this string:
             // Set-Cookie:	 | ASP.NET_SessionId=l1ago0vqldihpf45rj1yak55; path=/; HttpOnly
             foreach (var pair in httpRespMsg.Headers)
             {
                 if (pair.Key.Equals("Set-Cookie"))
                 {
                     var val = pair.Value.First();
-                    Log.Debug($"Set-Cookie = {val}");
+                    // Log.Debug($"Set-Cookie = {val}");
                     var semiFirstIdx = val.IndexOf(";", StringComparison.Ordinal);
                     var equalsIdx = val.IndexOf("=", StringComparison.Ordinal);
-                    Log.Debug($"GetSessionId {val}, eq={equalsIdx}, semi={semiFirstIdx}");
+                    // Log.Debug($"GetSessionId {val}, eq={equalsIdx}, semi={semiFirstIdx}");
                     return val.Substring(equalsIdx + 1, semiFirstIdx - equalsIdx - 1);
                 }
             }
 
             return string.Empty;
         }
+
+        private static void StoreHidden(HtmlNodeCollection headNodes)
+        {
+            var lastName = string.Empty;
+            var attributeName = string.Empty;
+            var attributeValue = string.Empty;
+
+            foreach (var node in headNodes)
+            {
+                foreach (var attribute in node.Attributes)
+                {
+                    switch (attribute.Name)
+                    {
+                        case "id":
+                            attributeName = attribute.Value;
+                            break;
+                        case "value":
+                            attributeValue = attribute.Value;
+                            break;
+                    }
+                }
+
+                if (attributeName == lastName) continue;
+
+                lastName = attributeName;
+                HiddenArguments.Add(attributeName, attributeValue);
+            }
+        }
+
+        private static Uri CreateUriWithQueryString(FormSearch formSearch)
+        {
+            //http://media.ethics.ga.gov/search/Campaign/Campaign_OfficeSearchResults.aspx?
+            //ElectionYear=2018&County=&City=&OfficeTypeID=120&District=&Division=&FilerID=&OfficeName=State%20Senate&Circuit=
+
+            var sb = new StringBuilder(OfficeSearchResultsUrl);
+            sb.Append("?ElectionYear=");
+            sb.Append(formSearch.ElectionYear);
+            sb.Append("&County=");
+            sb.Append(formSearch.County);
+            sb.Append("&City=");
+            sb.Append(formSearch.City);
+            sb.Append("&OfficeTypeID=");
+            sb.Append(formSearch.OfficeTypeId);
+            sb.Append("&District=");
+            sb.Append(formSearch.District);
+            sb.Append("&Division=");
+            sb.Append(formSearch.Division);
+            sb.Append("&FilerID=");
+            sb.Append(formSearch.FilerId);
+            sb.Append("&OfficeName=");
+            sb.Append(formSearch.OfficeName.Replace(" ", "%20"));
+            sb.Append("&Circuit=");
+            sb.Append(formSearch.Circuit);
+
+            var url = System.Web.HttpUtility.UrlPathEncode(sb.ToString());
+            return new Uri(url);
+        }
+        private static void ResetStatus(bool loggingOn, bool intLoggingOn)
+        {
+            HiddenArguments.Clear();
+
+            CurrentStatus.TotalPages = -1;
+            CurrentStatus.TotalCandidates = -1;
+            CurrentStatus.LastPageCompleted = 0;
+            CurrentStatus.ScrapeComplete = false;
+            CurrentStatus.LoggingOn = false;  // avoid output on last msg chg
+            CurrentStatus.LastOpMessage = string.Empty;
+            CurrentStatus.LoggingOn = true;
+            CurrentStatus.SbLog.Clear();
+            CurrentStatus.InternalLoggingOn = intLoggingOn;
+            CurrentStatus.LoggingOn = loggingOn;
+        }
+        
+        #endregion
 
         #region ValueDisplay
 
@@ -580,62 +644,6 @@ namespace PageScrape
 
         #endregion
 
-        private static void StoreHidden(HtmlNodeCollection headNodes)
-        {
-            var lastName = string.Empty;
-            var attributeName = string.Empty;
-            var attributeValue = string.Empty;
-
-            foreach (var node in headNodes)
-            {
-                foreach (var attribute in node.Attributes)
-                {
-                    switch (attribute.Name)
-                    {
-                        case "id":
-                            attributeName = attribute.Value;
-                            break;
-                        case "value":
-                            attributeValue = attribute.Value;
-                            break;
-                    }
-                }
-
-                if (attributeName == lastName) continue;
-
-                lastName = attributeName;
-                HiddenArguments.Add(attributeName, attributeValue);
-            }
-        }
-
-        private static Uri CreateUriWithQueryString(FormSearch formSearch)
-        {
-            //http://media.ethics.ga.gov/search/Campaign/Campaign_OfficeSearchResults.aspx?
-            //ElectionYear=2018&County=&City=&OfficeTypeID=120&District=&Division=&FilerID=&OfficeName=State%20Senate&Circuit=
-
-            var sb = new StringBuilder(OfficeSearchResultsUrl);
-            sb.Append("?ElectionYear=");
-            sb.Append(formSearch.ElectionYear);
-            sb.Append("&County=");
-            sb.Append(formSearch.County);
-            sb.Append("&City=");
-            sb.Append(formSearch.City);
-            sb.Append("&OfficeTypeID=");
-            sb.Append(formSearch.OfficeTypeId);
-            sb.Append("&District=");
-            sb.Append(formSearch.District);
-            sb.Append("&Division=");
-            sb.Append(formSearch.Division);
-            sb.Append("&FilerID=");
-            sb.Append(formSearch.FilerId);
-            sb.Append("&OfficeName=");
-            sb.Append(formSearch.OfficeName.Replace(" ", "%20"));
-            sb.Append("&Circuit=");
-            sb.Append(formSearch.Circuit);
-
-            var url = System.Web.HttpUtility.UrlPathEncode(sb.ToString());
-            return new Uri(url);
-        }
     }
 }
 /*

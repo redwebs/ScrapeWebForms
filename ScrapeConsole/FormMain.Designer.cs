@@ -88,6 +88,7 @@
             this.tbSiteUrl.Location = new System.Drawing.Point(99, 35);
             this.tbSiteUrl.MaxLength = 150;
             this.tbSiteUrl.Name = "tbSiteUrl";
+            this.tbSiteUrl.ReadOnly = true;
             this.tbSiteUrl.Size = new System.Drawing.Size(478, 20);
             this.tbSiteUrl.TabIndex = 134;
             this.tbSiteUrl.Text = "http://media.ethics.ga.gov/search/Campaign/Campaign_ByOffice.aspx";
@@ -191,6 +192,7 @@
             this.tbSiteTitle.Location = new System.Drawing.Point(99, 8);
             this.tbSiteTitle.MaxLength = 150;
             this.tbSiteTitle.Name = "tbSiteTitle";
+            this.tbSiteTitle.ReadOnly = true;
             this.tbSiteTitle.Size = new System.Drawing.Size(478, 20);
             this.tbSiteTitle.TabIndex = 144;
             this.tbSiteTitle.Text = "GA Gov Transparency and Campaign Finance Commission Web Scrape";
@@ -267,6 +269,7 @@
             this.Controls.Add(this.txtLog);
             this.Name = "FormMain";
             this.Text = "Scrape Console";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

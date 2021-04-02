@@ -318,5 +318,12 @@ namespace ScrapeConsole
             txtLog.Text = $"{str}{Environment.NewLine}{txtLog.Text}";
         }
 
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+//            Properties.Settings.Default.YearToScrape = cboYear.SelectedItem
+            Properties.Settings.Default.Save();
+        }
+
+
     }
 }

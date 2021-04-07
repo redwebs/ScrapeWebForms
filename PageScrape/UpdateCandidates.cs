@@ -460,12 +460,8 @@ namespace PageScrape
 
         private static void SetRequestHeaders(HttpRequestMessage request)
         {
-            // To enable gzip decode see https://weblog.west-wind.com/posts/2007/Jun/29/HttpWebRequest-and-GZip-Http-Responses
-            // OR: https://stackoverflow.com/questions/20990601/decompressing-gzip-stream-from-httpclient-response
-            // request.Headers.Add("accept-encoding", "gzip, deflate, br");
-            
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-            request.Headers.Add("accept-encoding", "identity");
+            request.Headers.Add("accept-encoding", "gzip, deflate, br");
             request.Headers.Add("accept", "*/*");
             request.Headers.Add("accept-language", "en-US,en;q=0.9");
             request.Headers.Add("cache-control", "no-cache");

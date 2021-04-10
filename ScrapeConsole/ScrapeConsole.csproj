@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClipboardHelper.cs" />
+    <Compile Include="CtrlListItem.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>

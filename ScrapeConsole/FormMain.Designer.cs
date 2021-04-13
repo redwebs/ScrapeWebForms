@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.txtLog = new System.Windows.Forms.TextBox();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnCopyLog = new System.Windows.Forms.Button();
@@ -48,23 +49,31 @@
             this.btnSetPath = new System.Windows.Forms.Button();
             this.cboYear = new System.Windows.Forms.ComboBox();
             this.lblYearToScrape = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabOutputLog = new System.Windows.Forms.TabPage();
+            this.tabScrapedData = new System.Windows.Forms.TabPage();
+            this.dataGridViewScrape = new System.Windows.Forms.DataGridView();
+            this.tabControl1.SuspendLayout();
+            this.tabOutputLog.SuspendLayout();
+            this.tabScrapedData.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewScrape)).BeginInit();
             this.SuspendLayout();
             // 
             // txtLog
             // 
             this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLog.Location = new System.Drawing.Point(12, 153);
+            this.txtLog.Location = new System.Drawing.Point(3, 3);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLog.Size = new System.Drawing.Size(614, 181);
+            this.txtLog.Size = new System.Drawing.Size(623, 273);
             this.txtLog.TabIndex = 1;
             // 
             // btnClear
             // 
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClear.Location = new System.Drawing.Point(646, 153);
+            this.btnClear.Location = new System.Drawing.Point(630, 6);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(58, 27);
             this.btnClear.TabIndex = 31;
@@ -75,7 +84,7 @@
             // btnCopyLog
             // 
             this.btnCopyLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCopyLog.Location = new System.Drawing.Point(646, 191);
+            this.btnCopyLog.Location = new System.Drawing.Point(631, 38);
             this.btnCopyLog.Name = "btnCopyLog";
             this.btnCopyLog.Size = new System.Drawing.Size(60, 27);
             this.btnCopyLog.TabIndex = 32;
@@ -243,11 +252,54 @@
             this.lblYearToScrape.TabIndex = 150;
             this.lblYearToScrape.Text = "Year to Scrape";
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabOutputLog);
+            this.tabControl1.Controls.Add(this.tabScrapedData);
+            this.tabControl1.Location = new System.Drawing.Point(15, 153);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(702, 302);
+            this.tabControl1.TabIndex = 151;
+            // 
+            // tabOutputLog
+            // 
+            this.tabOutputLog.Controls.Add(this.txtLog);
+            this.tabOutputLog.Controls.Add(this.btnClear);
+            this.tabOutputLog.Controls.Add(this.btnCopyLog);
+            this.tabOutputLog.Location = new System.Drawing.Point(4, 22);
+            this.tabOutputLog.Name = "tabOutputLog";
+            this.tabOutputLog.Padding = new System.Windows.Forms.Padding(3);
+            this.tabOutputLog.Size = new System.Drawing.Size(694, 276);
+            this.tabOutputLog.TabIndex = 0;
+            this.tabOutputLog.Text = "Output Log";
+            this.tabOutputLog.UseVisualStyleBackColor = true;
+            // 
+            // tabScrapedData
+            // 
+            this.tabScrapedData.Controls.Add(this.dataGridViewScrape);
+            this.tabScrapedData.Location = new System.Drawing.Point(4, 22);
+            this.tabScrapedData.Name = "tabScrapedData";
+            this.tabScrapedData.Padding = new System.Windows.Forms.Padding(3);
+            this.tabScrapedData.Size = new System.Drawing.Size(694, 276);
+            this.tabScrapedData.TabIndex = 1;
+            this.tabScrapedData.Text = "Scraped Data";
+            this.tabScrapedData.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewScrape
+            // 
+            this.dataGridViewScrape.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewScrape.Location = new System.Drawing.Point(3, 3);
+            this.dataGridViewScrape.Name = "dataGridViewScrape";
+            this.dataGridViewScrape.Size = new System.Drawing.Size(688, 270);
+            this.dataGridViewScrape.TabIndex = 0;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(725, 343);
+            this.ClientSize = new System.Drawing.Size(725, 467);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.lblYearToScrape);
             this.Controls.Add(this.cboYear);
             this.Controls.Add(this.btnSetPath);
@@ -264,13 +316,16 @@
             this.Controls.Add(this.tbStatus);
             this.Controls.Add(this.tbCsvFilePath);
             this.Controls.Add(this.tbSiteUrl);
-            this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnCopyLog);
-            this.Controls.Add(this.txtLog);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.Text = "Scrape Console";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.tabControl1.ResumeLayout(false);
+            this.tabOutputLog.ResumeLayout(false);
+            this.tabOutputLog.PerformLayout();
+            this.tabScrapedData.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewScrape)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -298,6 +353,10 @@
         private System.Windows.Forms.Button btnSetPath;
         private System.Windows.Forms.ComboBox cboYear;
         private System.Windows.Forms.Label lblYearToScrape;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabOutputLog;
+        private System.Windows.Forms.TabPage tabScrapedData;
+        private System.Windows.Forms.DataGridView dataGridViewScrape;
     }
 }
 

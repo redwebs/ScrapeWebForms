@@ -25,7 +25,7 @@ namespace ScrapeConsole.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2021")]
         public int YearToScrape {
             get {
                 return ((int)(this["YearToScrape"]));

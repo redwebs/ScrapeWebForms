@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace ScrapeConsole
 {
     public class CtrlListItem
@@ -6,22 +8,19 @@ namespace ScrapeConsole
         protected string Text;
         protected int ItemDataVal;
 
-        public CtrlListItem(string text)
-        {
-            Text = text;
-            ItemDataVal = 0;
-        }
-
         public CtrlListItem(string text, int itemData)
         {
             Text = text;
             ItemDataVal = itemData;
         }
 
-        public CtrlListItem(string text, string itemDataString)
+        public CtrlListItem(string text)
         {
             Text = text;
-            int.TryParse(itemDataString, out ItemDataVal);
+            if (!int.TryParse(text, out ItemDataVal))
+            {
+                throw new ArgumentException($"{text} cannot be parsed to an integer.");
+            };
         }
 
         public int ItemData

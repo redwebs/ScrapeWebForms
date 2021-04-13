@@ -21,7 +21,7 @@ namespace ScrapeConsole
         private static string LastStat = string.Empty;
         private List<Candidate> _candidateList;
 
-        #region Form Init
+        #region Form
 
         // ++++++++++++++++++++++ Form declaration and load ++++++++++++++++++++++
 
@@ -43,17 +43,40 @@ namespace ScrapeConsole
 
             // Fill combo with years
             var thisYear = DateTime.Now.Year;
+            var savedYear = Properties.Settings.Default.YearToScrape;
+            var yearIdx = 0;
 
-            for (var year = thisYear - 1; year < thisYear + 3; year++)
+            for (var year = thisYear - 5; year < thisYear + 3; year++)
             {
-                cboYear.Items.Add(year);
+                cboYear.Items.Add(new CtrlListItem(year.ToString(),year));
+
+                if (savedYear.Equals(year))
+                {
+                    cboYear.SelectedIndex = yearIdx;
+                }
+                yearIdx++;
             }
 
-            cboYear.SelectedItem = thisYear;
-
+            tbCsvFilePath.Text = Properties.Settings.Default.CsvFilePath;
         }
 
-        #endregion Form Init
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (cboYear.SelectedItem == null)
+            {
+                Properties.Settings.Default.YearToScrape = DateTime.Now.Year;
+            }
+            else
+            {
+                Properties.Settings.Default.YearToScrape = ((CtrlListItem)cboYear.SelectedItem).ItemData;
+            }
+
+            Properties.Settings.Default.CsvFilePath = tbCsvFilePath.Text;
+            Properties.Settings.Default.Save();
+        }
+
+
+        #endregion Form
 
         #region Background Worker Events
 
@@ -144,6 +167,7 @@ namespace ScrapeConsole
                     // The process finished
                     _candidateList = (List<Candidate>) result.Candidates;
                     tbStatus.Text = $" Job finished, {_candidateList.Count} Candidates, Elapsed Time: {result.ElapsedTime}";
+                    dataGridViewScrape.DataSource = _candidateList;
                 }
             }
             AppendLogBox($"Total Bytes Read: {result.SequenceStat.BytesReceived:###,###}");
@@ -240,7 +264,7 @@ namespace ScrapeConsole
         {
             var list = new List<Candidate>();
 
-            var arrObjects = new object[] {(int)cboYear.SelectedItem, list };        // Declare the array of objects
+            var arrObjects = new object[] {((CtrlListItem)cboYear.SelectedItem).ItemData, list };        // Declare the array of objects
 
             if (backgroundWorkerScrape.IsBusy)
             {
@@ -317,13 +341,6 @@ namespace ScrapeConsole
         {
             txtLog.Text = $"{str}{Environment.NewLine}{txtLog.Text}";
         }
-
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-//            Properties.Settings.Default.YearToScrape = cboYear.SelectedItem
-            Properties.Settings.Default.Save();
-        }
-
 
     }
 }

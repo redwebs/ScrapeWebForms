@@ -81,7 +81,7 @@ namespace PageScrape
 
             bgWorker.ReportProgress(0, userStatus);
 
-            SeqStatus.LastOpMessage = $"RunAllQueries preparing to run {FormSearches.Count} searches.";
+            SeqStatus.LastOpMessage = $"RunAllQueries preparing to run {FormSearches.Count} searches for {year}.";
 
             var queryCounter = 1;
             var queries = FormSearches.Count;
